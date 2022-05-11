@@ -1,0 +1,1299 @@
+/**
+ * Copyright (c) 2013 NSD CO., LTD. All Rights Reserved.
+ */
+function submitControl() {
+	if (_submitCtrl) {
+		setDisabled(nodes_input, nodes_href, nodes_button);
+		_submitCtrl = false;
+		return true;
+	} else {
+		return false;
+	}
+}
+function execSrvStatus(method, page) {
+	execSrv(method, page);
+}
+
+function execSrvStatusTopFrame(method, page) {
+	window.document.cmdForm.target = '_top';
+	execSrv(method, page);
+}
+
+function execSrv(method, page) {
+	if (_submitCtrl && submitControl()) {
+		window.document.cmdForm.removeAttribute('enctype');
+		window.document.cmdForm.method.value = method;
+		if (page != null) {
+			window.document.cmdForm.viewId.value = page;
+		}
+		window.document.cmdForm.submit();
+		window.document.body.style.cursor = 'wait';
+	}
+}
+
+function execSrvStatus_frame(frameId, method){
+	if (_submitCtrl && submitControl()) {
+
+		// フレーム外側の操作ボタンの調整
+		setButtonDisabledFrame(frameId, window.parent.nodes_button, true);
+
+		window.document.cmdForm_ifream.removeAttribute('enctype');
+		window.document.cmdForm_ifream.method.value = method;
+		window.document.cmdForm_ifream.submit();
+		window.document.body.style.cursor = 'wait';
+
+	}
+}
+
+function execSrvDL_frame(frameId, method){
+
+		// フレーム外側の操作ボタンの調整
+		setButtonDisabledFrame(frameId, window.parent.nodes_button, true);
+
+		window.document.cmdForm_ifream.removeAttribute('enctype');
+		window.document.cmdForm_ifream.method.value = method;
+		window.document.cmdForm_ifream.submit();
+		window.document.body.style.cursor = 'wait';
+
+		// フレーム外側の操作ボタンの調整
+		setButtonDisabledFrame(frameId, window.parent.nodes_button, false);
+	}
+
+
+var interval;
+function execSrvNotDisable(method, page) {
+	_submitCtrl = false;
+	var orgViewId = window.document.cmdForm.viewId.value;
+	window.document.cmdForm.removeAttribute('enctype');
+	window.document.cmdForm.method.value = method;
+	if (page != null) {
+		window.document.cmdForm.viewId.value = page;
+	}
+	window.document.cmdForm.submit();
+	window.document.cmdForm.viewId.value = orgViewId;
+	interval = setInterval("compCheck()", 250);
+}
+/** ダウンロード　iframe */
+function frame_execSrvNotDisable(method, page) {
+
+	if (typeof editptn != 'undefined') {
+		$("#editptn").val(editptn);
+	}
+
+	_submitCtrl = false;
+	var orgViewId = window.document.cmdForm_ifream.viewId.value;
+	window.document.cmdForm_ifream.removeAttribute('enctype');
+	window.document.cmdForm_ifream.method.value = method;
+	if (page != null) {
+		window.document.cmdForm.viewId.value = page;
+	}
+	window.document.cmdForm_ifream.submit();
+	window.document.cmdForm_ifream.viewId.value = orgViewId;
+	interval = setInterval("compCheck()", 250);
+}
+//var strtest = '';
+function compCheck() {
+//	strtest = strtest + window.document.readyState + ',' ;
+	if (window.document.readyState == 'complete'
+			|| window.document.readyState == 'interactive') {//ie子画面はcompleteにならない
+		clearInterval(interval);
+		_submitCtrl = true;
+//		alert(strtest);
+	}
+}
+function execFileSrv(method, page) {
+	if (_submitCtrl && submitControl()) {
+		window.document.cmdForm.encoding = "multipart/form-data";
+		window.document.cmdForm.setAttribute('enctype', 'multipart/form-data');
+		var act = window.document.cmdForm.action;
+		act = act + '?method=' + method;
+		if (page != null) {
+			act = act + '&viewId=' + page;
+		} else {
+			act = act + '&viewId=' + window.document.cmdForm['viewId'].value;
+		}
+		act = act + '&sign=' + window.document.cmdForm['sign'].value;
+		act = act + '&$csrfhash$=' + window.document.cmdForm['$csrfhash$'].value;
+
+		window.document.cmdForm.action = act;
+		window.document.cmdForm.submit();
+		window.document.body.style.cursor = 'wait';
+	}
+}
+function setDisabled(nodes_input, nodes_href, nodes_button) {
+	setInputDisabled(nodes_input);
+	setHrefRemove(nodes_href);
+	setButtonDisabled(nodes_button, true);
+}
+function setInputDisabled(nodes_input) {
+	for ( var i = nodes_input.length - 1; i >= 0; i--) {
+		if (nodes_input[i].type == "button") {
+			nodes_input[i].disabled = true;
+		}
+	}
+}
+function setHrefRemove(nodes_href) {
+	for ( var i = nodes_href.length - 1; i >= 0; i--) {
+		nodes_href[i].removeAttribute("href");
+		nodes_href[i].style.cursor = 'wait';
+		nodes_href[i].style.color = '#333';
+		nodes_href[i].onclick = function() {
+		};
+	}
+}
+function setButtonDisabled(nodes_button, isDisabled) {
+
+	if (isDisabled) {
+		for ( var i = nodes_button.length - 1; i >= 0; i--) {
+			$(nodes_button[i]).prop('disabled', true);
+			$(nodes_button[i]).addClass('ui-state-disabled');
+		}
+
+	} else {
+		for ( var i = nodes_button.length - 1; i >= 0; i--) {
+			$(nodes_button[i]).prop('disabled', false);
+			$(nodes_button[i]).removeClass('ui-state-disabled');
+		}
+	}
+
+}
+
+function setButtonDisabledFrame(frameId, nodes_buttonTmp, isDisabled) {
+
+	var nodes_button = [];
+	$(nodes_buttonTmp).each(function() {
+		if ($(this).parent().parent().parent().html().indexOf(frameId) > 0) {
+			nodes_button.push($(this));
+		}
+	});
+
+	if (isDisabled) {
+		for ( var i = nodes_button.length - 1; i >= 0; i--) {
+			$(nodes_button[i]).prop('disabled', true);
+			$(nodes_button[i]).addClass('ui-state-disabled');
+		}
+
+	} else {
+		for ( var i = nodes_button.length - 1; i >= 0; i--) {
+			$(nodes_button[i]).prop('disabled', false);
+			$(nodes_button[i]).removeClass('ui-state-disabled');
+		}
+	}
+
+}
+
+/** DataSet用Function */
+function setData(name, value) {
+	window.document.cmdForm[name].value = value;
+}
+
+/** 画面上部へ戻るためのScript */
+//function pageTop() {
+//	var x1 = x2 = x3 = 0;
+//	var y1 = y2 = y3 = 0;
+//	if (document.documentElement) {
+//		x1 = document.documentElement.scrollLeft || 0;
+//		y1 = document.documentElement.scrollTop || 0;
+//	}
+//	if (document.body) {
+//		x2 = document.body.scrollLeft || 0;
+//		y2 = document.body.scrollTop || 0;
+//	}
+//	x3 = window.scrollX || 0;
+//	y3 = window.scrollY || 0;
+//	var x = Math.max(x1, Math.max(x2, x3));
+//	var y = Math.max(y1, Math.max(y2, y3));
+//	window.scrollTo(Math.floor(x / 2), Math.floor(y / 2));
+//	if (x > 0 || y > 0) {
+//		window.setTimeout("pageTop()", 20);
+//	}
+//}
+
+/** OperationGuideWindowOpen用Parts */
+var operationGuideSubWin;
+function openOperationGuideWin(jspName) {
+	if (operationGuideSubWin != null) {
+		try {
+			operationGuideSubWin.close();
+		} catch (e) {
+		}
+	}
+	try {
+		operationGuideSubWin = window
+				.open(jspName, 'OperationGuide',
+						'top=0,left=0,height=500,width=600,menubar=no,resizable=yes,scrollbars=yes');
+	} catch (e) {
+	}
+	window.document.body.onunload = function() {
+		if (operationGuideSubWin != null) {
+			try {
+				operationGuideSubWin.close();
+			} catch (e) {
+			}
+		}
+	};
+	try {
+		operationGuideSubWin.focus();
+	} catch (e) {
+	}
+}
+
+function reSizeDataDiv() {
+	if (document.getElementById("scroll_div")) {
+		try {
+			var sDiv = document.getElementById("scroll_div");
+			sDiv.style.display = 'none';
+			var headerHeight = document.getElementById("scroll_area").clientHeight;
+			var contentsHeight = document.getElementById("scroll_td").clientHeight;
+			if (contentsHeight == headerHeight) {
+				return false;
+			}
+			var divHeight = contentsHeight - headerHeight;
+			sDiv.style.height = divHeight + 'px';
+			sDiv.style.display = '';
+		} catch (e) {
+			document.getElementById("scroll_div").style.display = '';
+		}
+	}
+}
+
+/**
+ * カレンダー(datepicker)作成<BR>
+ * calNotSelectYoubiで選択不可曜日を指定可能。
+ */
+function useDatepicker(defDate, nendoS) {
+//function useDatepicker(defDate, nendoS, nendoE) {
+	var HOLIDAYS = {};
+//	alert(nendoS + '/' + nendoE);
+	$(".datepicker").datepicker(
+		{
+			showOn : "button",
+			buttonImage: "../img/calbtn.gif",
+			buttonImageOnly: true,
+			buttonText : 'カレンダー表示',
+			defaultDate : defDate,
+			changeMonth : true,
+			changeYear : true,
+//			yearRange : '-0:+1',
+//			defaultformat : 'yyyy/MM/dmm',
+			minDate : nendoS,
+//			maxDate : nendoE,
+			showButtonPanel : false,
+			showOtherMonths : true,
+			beforeShowDay : function(day) {
+				var result;
+
+				if(calNotSelectYoubi.indexOf(day.getDay()) < 0){
+					if (HOLIDAYS[day.getYear() + "/" + (day.getMonth() + 1)
+							+ "/" + day.getDate()]) {
+						result = [ true, "date-sunday" ];
+					} else {
+						switch (day.getDay()) {
+						case 0: // 日曜日
+							result = [ true, "date-sunday" ];
+							break;
+						case 6: // 土曜日
+							result = [ true, "date-saturday" ];
+							break;
+						default:
+							result = [ true, "" ];
+							break;
+						}
+					}
+				}else{
+					result = [ false, "ui-state-disabled"];
+
+				}
+				return result;
+			}
+		});
+	// 日本語表記
+	$.datepicker.setDefaults($.datepicker.regional["ja"]);
+}
+
+/**
+ * カレンダー(datepicker)作成<BR>
+ * font-sizeでサイズ変更可能。<BR>
+ * date-input,date-uninputで未入力/入力済日の書式を指定する。<BR>
+ * calNotSelectYoubiで選択不可曜日を指定可能。
+ * <p>
+ *
+ * defDate : 初期日付(YYYY/MM/DD形式)<BR>
+ * nendoS : 開始日付(YYYY/MM/DD形式)<BR>
+ * nendoE : 終了日付(YYYY/MM/DD形式)<BR>
+ * inputedDateList : 入力済み日付リスト('YYYYMMDD', …)
+ */
+function calDatepicker(defDate, nendoS, nendoE, inputedDateList) {
+	var HOLIDAYS = {};
+	$(".datepicker").datepicker(
+		{
+			showOn : "focus",
+//			buttonImage: "../img/calbtn.gif",
+//			buttonImageOnly: true,
+//			buttonText : 'カレンダー表示',
+			defaultDate : defDate,
+			changeMonth : true,
+			changeYear : true,
+//			yearRange : '-0:+1',
+//			defaultformat : 'yyyy/MM/dmm',
+			minDate : nendoS,
+			maxDate : nendoE,
+			showButtonPanel : false,
+			showOtherMonths : true,
+			beforeShowDay : function(day) {
+				var result;
+
+				if(calNotSelectYoubi.indexOf(day.getDay()) < 0){
+					if (HOLIDAYS[day.getYear() + "/" + (day.getMonth() + 1)
+							+ "/" + day.getDate()]) {
+						result = [ true, "date-sunday" ];
+					} else {
+						switch (day.getDay()) {
+						case 0: // 日曜日
+							result = [ true, "date-sunday" ];
+							break;
+						case 6: // 土曜日
+							result = [ true, "date-saturday" ];
+							break;
+						default:
+							result = [ true, "" ];
+							break;
+						}
+					}
+
+					date = day.getFullYear() + ''
+					+ ("0" + (day.getMonth() + 1)).slice(-2) + ''
+					+ ("0" + day.getDate()).slice(-2);
+
+					// 入力済日
+					if ($.inArray(date, inputedDateList) >= 0) {
+						result = [ true, "date-input" ];
+					} else {
+						result = [ true, "date-uninput" ];
+					}
+				}else{
+					result = [ false, "ui-state-disabled"];
+				}
+				return result;
+			}
+		});
+	// 日本語表記
+	$.datepicker.setDefaults($.datepicker.regional["ja"]);
+}
+
+/**
+ * 確認ダイアログ簡単作成。
+ * <p>
+ *
+ * message : ダイアログのメッセージ本文<BR>
+ * title : ダイアログのタイトル<BR>
+ * buttonok : OKボタンのテキスト<BR>
+ * buttoncancel : キャンセルボタンのテキスト<BR>
+ * response : コールバック関数を指定する。引数 cancel にボタン選択の結果が入る。 OK ならば false、キャンセルならば true
+ * となる。
+ */
+function confirmDialog(message, title, buttonok, buttoncancel, response) {
+	if(iframeFlg){
+		//子画面の場合
+		window.parent.confirmDialog(message, title, buttonok, buttoncancel, response);
+		return;
+	}
+
+	var _dlg = $('<div id="confDlg">' + message + '</div>');
+
+	if ($("#confDlg").val() != undefined) {
+		return;
+	}
+
+	var _buttons = {};
+	_buttons[buttonok] = function() {
+		$(this).dialog('close');
+		response(false);
+	};
+	_buttons[buttoncancel] = function() {
+		$(this).dialog('close');
+		response(true);
+	};
+
+	_dlg.dialog({
+		//modal時のdraggableは組み合わせ固定
+		modal : true, draggable : false,
+//		show : "blind",
+//		hide : "drop",
+		title : title,
+		minHeight : 200,
+		height :"auto",
+		maxWidth : 430,
+		buttons : _buttons,
+		overlay : {
+			opacity : 0.1,
+			background : '#225B7F'
+		},
+		position : {
+			of : positionLT(),
+			at : 'top center',
+			my : 'top center'
+		},
+		open : function(event, ui) {
+			positionLT();
+		},
+		close : function(event) {$(this).dialog('destroy');}
+	});
+}
+
+/**
+ * 確認ダイアログ簡単作成。(上書き確認用)
+ * ※重複起動が可能、かつレスポンスが多い
+ */
+function confirmDialogReWrite(message, fileName, flgBak, response) {
+
+	var title = confWinTitle;
+	var buttonok = yesBtnName;
+	var buttoncancel = noBtnName;
+
+	if(iframeFlg){
+		//子画面の場合
+		window.parent.confirmDialogReWrite(message, fileName, flgBak, response);
+		return;
+	}
+
+	var _dlg = $('<div id="confDlgReWrite">' + message + '</div>');
+
+	var _buttons = {};
+	_buttons[buttonok] = function() {
+		$(this).dialog('close');
+		response(false, fileName, flgBak);
+	};
+	_buttons[buttoncancel] = function() {
+		$(this).dialog('close');
+		response(true, fileName, flgBak);
+	};
+
+	_dlg.dialog({
+		//modal時のdraggableは組み合わせ固定
+		modal : true, draggable : false,
+//		show : "blind",
+//		hide : "drop",
+		title : title,
+		height : 180,
+		maxWidth : 430,
+		buttons : _buttons,
+		overlay : {
+			opacity : 0.1,
+			background : '#225B7F'
+		},
+		close : function(event) {$(this).dialog('destroy');}
+	});
+}
+
+/**
+ * 確認ダイアログ簡単作成。
+ * <p>
+ * デフォルトのタイトル、ボタンつきの確認ダイアログを作成します。
+ * message : ダイアログのメッセージ本文<BR>
+ * response : コールバック関数を指定する。引数 cancel にボタン選択の結果が入る。 [はい]:false、[いいえ]: true
+ * となる。
+ */
+function confirmDialogDef(message, response) {
+	confirmDialog(message, confWinTitle, yesBtnName, noBtnName, response);
+}
+
+/**
+ * アラートダイアログ簡単作成。
+ * <p>
+ *
+ * message : ダイアログのメッセージ本文<BR>
+ * title : ダイアログのタイトル<BR>
+ * buttonok : OKボタンのテキスト
+ */
+function alertDialog(message, title, buttonok) {
+	if(iframeFlg){
+		//子画面の場合
+		window.parent.alertDialog(message,title,buttonok);
+		return;
+	}
+
+	var _dlg = $('<div id="alertDlg">' + message + '</div>');
+
+	if ($("#alertDlg").val() != undefined) {
+		return;
+	}
+
+	var _buttons = {};
+	_buttons[buttonok] = function() {
+		$(this).dialog('close');
+	};
+
+	_dlg.dialog({
+		//modal時のdraggableは組み合わせ固定
+		modal : true, draggable : false,
+//		show : "blind",
+//		hide : "drop",
+		title : title,
+		height :180,
+		maxWidth : 430,
+		buttons : _buttons,
+		overlay : {
+			opacity : 0.1,
+			background : '#225B7F'
+		},
+		position : {
+			of : positionLT(),
+			at : 'top center',
+			my : 'top center'
+		},
+		open : function(event, ui) {
+			positionLT();
+		},
+		close : function(event) {$(this).dialog('destroy');}
+	});
+}
+
+/**
+ * アラートダイアログ簡単作成。
+ * <p>
+ *
+ * message : ダイアログのメッセージ本文<BR>
+ * title : ダイアログのタイトル<BR>
+ * buttonok : OKボタンのテキスト
+ */
+function alertDialogKeepPosition(message, title, buttonok) {
+	if(iframeFlg){
+		//子画面の場合
+		window.parent.alertDialog(message,title,buttonok);
+		return;
+	}
+	// ウィンドウ位置の保持
+	var window_X = $(window).scrollLeft();
+	var window_Y = $(window).scrollTop();
+
+	var _dlg = $('<div id="alertDlg">' + message + '</div>');
+
+	if ($("#alertDlg").val() != undefined) {
+		return;
+	}
+
+	var _buttons = {};
+	_buttons[buttonok] = function() {
+		$(this).dialog('close');
+	};
+
+	_dlg.dialog({
+		//modal時のdraggableは組み合わせ固定
+		modal : true, draggable : false,
+//		show : "blind",
+//		hide : "drop",
+		title : title,
+		height : 180,
+		maxWidth : 430,
+		buttons : _buttons,
+		overlay : {
+			opacity : 0.1,
+			background : '#225B7F'
+		},
+		position : {
+			of : positionLT(),
+			at : 'top center',
+			my : 'top center'
+		},
+		open : function(event, ui) {
+			positionLT();
+		},
+		close : function(event) {
+			console.log($(this));
+			$(this).dialog('destroy');
+			// ウィンドウ位置の復帰
+			$(window).scrollLeft(window_X);
+			$(window).scrollTop(window_Y);
+		}
+	});
+}
+
+/**
+ * valueの全角数字を半角にして返却する
+ * @param value
+ * @returns
+ */
+function getHanNum(value){
+	var han = value.replace(/[０-９]/g,function(c){return String.fromCharCode(c.charCodeAt(0)-0xFEE0);});
+	return han;
+}
+
+function checkHanNum(value){
+	if(value.match(/^[0-9]+$/)==null){
+		//数値でない
+		return true;
+	}
+	return false;
+}
+
+
+/**
+ * 点数のチェック(正の整数であること)
+ * @param id 点数入力項目のID('#id名')
+ * @returns {Boolean} エラー：true エラーなし:false
+ */
+function isTnsCheckErr(id){
+
+	var tns = $(id).val();
+
+	if(tns == ''){
+		return false;
+	}
+
+	//半角に変換
+	tns = getHanNum(tns);
+
+	if(checkHanNum(tns)){
+		//数値でない⇒エラー
+		alertDialog('点数に数字以外が入力されています。',errWinTitle, okBtnName);
+		return true;
+	}
+	$(id).val(parseInt(tns));
+
+	return false;
+}
+
+/**
+ * 満点のチェック(事前に点数チェックをかけて下さい)
+ * @param tensu
+ * @param manten
+ * @returns {Boolean} エラー：true エラーなし:false
+ */
+function isMantenCheckErr(tensu, manten){
+	if(tensu == '' || manten == ''){
+		return false;
+	}
+
+	if(parseInt(manten) < parseInt(tensu)){
+		alertDialog('点数が満点を超えています。満点は「'+manten+'点」です。',errWinTitle, okBtnName);
+		return true;
+	}
+	return false;
+}
+
+
+/**
+ * CSRFハッシュ値をクエリパラメータに設定したURLを取得
+ * @param url
+ * @param form
+ * @returns
+ */
+function getUrlWithCSRFHash(url, form) {
+	form = form || document.cmdForm;
+	var csrfhash = form['$csrfhash$'];
+	if (!csrfhash) {
+		//alert('CSRFハッシュ値を取得できません。');
+		return url;
+	}
+
+	return url + '%24csrfhash%24=' + csrfhash.value;
+}
+
+/**
+ * 対象の画面のformを取得する（cmdForm or cmdForm_iframe）
+ * @returns {String}
+ */
+function getForm(){
+	var form = "";
+	if ($(document.body).find("form")[0].name == 'cmdForm') {
+		form = document.cmdForm;
+	}else{
+		form = document.cmdForm_ifream;
+	}
+	return form;
+}
+
+/**
+ * タグをエスケープした文字列を返す
+ * @param value 値
+ * @returns 文字列
+ */
+function htmlEncode(str) {
+    return str.replace(/&/g, "&amp;").replace(/"/g, "&quot;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/'/g, "&#39;");
+}
+//function htmlEncode(value) {
+//	return $('<div/>').text(value).html();
+//}
+/**
+ * タグをアンエスケープした文字列を返す（通常のタグ再変換＋エンコード済のスペースも再変換）
+ * jqgridのencode済valueを別のエリアで表示する際に使用
+ */
+function htmlDecode(str){
+	if (str == undefined || str == '') {
+		return '';
+	}
+	return str.replace(/(&nbsp;)/g, ' ').replace(/(&lt;)/g, '<').replace(/(&gt;)/g, '>').replace(/(&quot;)/g, '"').replace(/(&#39;)/g, "'").replace(/(&amp;)/g, '&');
+}
+/**
+ * マスタメンテ
+ * 仮パスワード表示
+ * @param msg 仮パスワード
+ */
+function alertInfoPassword(twin,msg){
+	twin = twin || window;
+	if(msg==""){return;}
+	passwordDialogOpen(twin,msg);
+}
+
+/**
+ * マスタメンテ
+ * パスワード初期化ボタン押下
+ */
+function resetPassword(){
+
+	var insCnt = 0;
+	var ret = true;
+	var form = document.cmdForm;
+
+	// チェックが入ったもの
+	$(':checkbox[name="userid[]"]:checked').each(function(index, checkbox) {
+		insCnt++;
+		// hidden項目を追加（ユーザの氏名）
+		var elm = document.createElement("input");
+		    elm.setAttribute("name", "username[]");
+		    elm.setAttribute("type", "hidden");
+		    elm.setAttribute("value", $(this).attr("title"));
+		    form.appendChild(elm);
+	});
+
+	// 誰も選択されていない場合
+	if (insCnt == 0) {
+		alertDialog('パスワード初期化対象のユーザを選択してください。', errWinTitle, okBtnName);
+	} else {
+
+		// パスワード指定の場合
+		if($('#resetPassSitei').prop('checked')){
+
+			var pass = $('#resetPass').val().trim();
+			if (pass == '') {
+				alertDialog('指定するパスワードを入力してください。', errWinTitle, okBtnName);
+				ret = false;
+			}
+
+			if ((pass.length < 8) | (pass.length > 32)) {
+				alertDialog('パスワードは、8文字以上32文字以下で入力してください。', errWinTitle, okBtnName);
+				ret = false;
+			}
+
+			var toHalfPass = toHalf(pass);//半角変換
+			$('#resetPass').val(toHalfPass);
+			if(!toHalfPass.match(/^[a-zA-Z0-9!-\/:-@\[-\`\{-\~]+$/)){
+				alertDialog('パスワードは、半角英数記号(スペース除く)で入力してください。', errWinTitle, okBtnName);
+				ret = false;
+			}
+
+			if (/[a-zA-Z]/.test(toHalfPass) && /[0-9]/.test(toHalfPass)) {
+				//英数1文字ずつ含む
+			}else{
+				alertDialog('パスワードは、英字と数字を1文字ずつ含めて設定してください。', errWinTitle, okBtnName);
+				ret = false;
+			}
+		}
+
+
+		// 入力チェックエラーがない場合
+		if(ret){
+			// 確認画面
+			var msg = '';
+			if($('#resetPassSitei').prop('checked')){
+				msg='パスワードを <span class="attention">' + $('#resetPass').val()  + '</span> で初期化します。<BR>よろしいですか？';
+			}else{
+
+				msg='パスワードをランダムに生成した文字列で初期化します。<BR>よろしいですか？';
+			}
+
+			confirmDialogDef(msg, function(cancel) {
+				if (!cancel) {
+					// update処理
+					$('#rowid').val($('#result_body').getGridParam("selrow"));
+					execSrvStatus('reset');
+				}
+			});
+		}
+	}
+}
+
+/**
+ * Ajax通信失敗時のエラー処理(共通)
+ * 本処理を呼び出したくない場合、Ajax通信時に「global: false」を定義する
+ * @param msg
+ */
+$(document).ajaxError(function(event, XMLHttpRequest, options, thrownError){
+
+	// HTTPステータスコードが408の場合
+	if (XMLHttpRequest.status == 408) {
+		// エラー画面に遷移
+		top.location.href= serv + "/help/AccessError.jsp";
+
+	// HTTPステータスコードが412 or 405の場合
+	} else if (XMLHttpRequest.status == 412 || XMLHttpRequest.status == 405) {
+		// CSRFエラー画面に遷移
+		top.location.href= serv + "/help/error7xx.html";
+
+	// HTTPステータスコードが417の場合
+	} else if (XMLHttpRequest.status == 417) {
+		// ディレクトリトラバーサルエラー画面に遷移
+		top.location.href= serv + "/help/error8xx.html";
+
+	// HTTPステータスコードが404の場合
+	} else if (XMLHttpRequest.status == 404) {
+		// ダイアログを表示
+		alertDialog("対象のファイルが存在しません。すでに削除されている可能性があります。", errWinTitle, okBtnName);
+
+	// HTTPステータスコードが409の場合
+	} else if (XMLHttpRequest.status == 409) {
+		// ダイアログを表示
+		alertDialog("ファイルのダウンロードに失敗しました。", errWinTitle, okBtnName);
+
+	// HTTPステータスコードが410の場合
+	} else if (XMLHttpRequest.status == 410) {
+		// ダイアログを表示
+		alertDialog("ファイルの削除に失敗しました。", errWinTitle, okBtnName);
+
+	// HTTPステータスコードが403の場合
+	} else if (XMLHttpRequest.status == 403) {
+		alertDialog("処理に失敗しました。", errWinTitle, okBtnName);
+
+	// HTTPステータスコードが400の場合
+	} else if (XMLHttpRequest.status == 400) {
+		top.location.href= serv + "/help/error4xx.html";
+	}
+
+});
+
+//アップロード中の判断
+function isUploading() {
+
+	var ret = false;
+
+	// アップロード中の場合
+	if ($(".fileUploadingBar").length > 0) {
+		ret = true;
+	}
+
+	return ret;
+
+}
+
+// アップロード中の判断(ダイアログ)
+function isUploadingDialog(frameid) {
+
+	var ret = false;
+
+	// アップロード中の場合
+	if ($("#" + frameid).contents().find(".fileUploadingBar").length > 0) {
+		ret = true;
+	}
+
+	return ret;
+
+}
+
+//配列の重複削除
+function unique(array) {
+	var storage = {};
+	var uniqueArray = [];
+	var i,value;
+	for ( i=0; i<array.length; i++) {
+	   value = array[i];
+	      if (!(value in storage)) {
+	      storage[value] = true;
+	         uniqueArray.push(value);
+	       }
+	   }
+	   return uniqueArray;
+}
+
+// ラジオ、チェックボックス画像化
+// ※処理の最後に呼ぶ(非活性パターンの画像があるため)
+function setImgCtrl() {
+
+	var ctrlSize = 26;
+
+	var imgRadio = "radio.png";
+	var imgChk = "checkbox.png";
+
+	if (is_ios == '1') {
+		imgRadio = "radio_ipad.png";
+		imgChk = "checkbox_ipad.png";
+	}
+
+	// ラジオボタン
+	$('input:radio').screwDefaultButtons({
+		image: 'url("../jq/ScrewDefaultButtons/images/' + imgRadio + '")',
+		width: ctrlSize,
+		height: ctrlSize
+	});
+
+	// チェックボックス
+	$('input:checkbox').screwDefaultButtons({
+		image: 'url("../jq/ScrewDefaultButtons/images/' + imgChk + '")',
+		width: ctrlSize,
+		height: ctrlSize
+	});
+
+	// ラベル
+	// ※チェックボックスのラベルクリックが反応しないが
+	// これを入れたら通った
+	$('.labelex').on('click', function(event) {
+		event.preventDefault();
+	});
+
+	// ラベルCSS
+	$('.labelex').css("cursor", "pointer");
+	$('.labelex').css("line-height", ctrlSize + "px");
+	$('.labelex').css("display", "block");
+	$('.labelex').css("margin-bottom", "6px");
+
+}
+
+//setImgCtrlの非活性を活性に切替時の画の調整
+var imgActivate_op1 = ['enable'];
+var imgActivate_op2 = ['enable','uncheck'];
+function setImgActivateCtrl(op) {
+	for(var i=0; i< op.length;i++) {
+		$('input:radio, input:checkbox').screwDefaultButtons(op[i]);
+	}
+}
+
+
+/**
+ * 遷移前の確認
+ * 変更している場合、編集破棄を確認してから遷移する
+ * @param method
+ * @param jspName
+ */
+function confirmTransfer(method, jspName){
+	confirmFunction(function(){
+		execSrvStatus(method, jspName);
+	});
+}
+
+/**
+ * 処理実行前の確認
+ * response有で処理続行、レスポンス無(return)で処理を中断する
+ * ※呼び出し元でこの関数の後に処理がある場合、その処理は中断しない
+ * 　制御したい場合はコールバック関数内で処理する
+ * 変更している場合、確認の結果はい：response有、いいえ：response無(return)
+ * 変更していない場合、response有
+ */
+function confirmFunction(response){
+	if(isChanged && isUpdView){
+		//変更あり、かつ編集画面
+		confirmDialogDef(confWinEscMessage, function(cancel){
+			if(cancel){
+				return ;
+			}else{
+				response(true);
+			}
+		});
+	}else{
+		response(true);
+	}
+}
+/**
+ * 処理実行前の確認
+ * 常にresponse有
+ * ※呼び出し元でこの関数の後に処理がある場合、その処理は中断しない
+ * 　制御したい場合はコールバック関数内で処理する
+ * 変更している場合、確認の結果はい：true、いいえ：false
+ * 変更していない場合、true
+ */
+function confirmFunction_alwaysresp(response){
+	if(isChanged && isUpdView){
+		//変更あり、かつ編集画面
+		confirmDialogDef(confWinEscMessage, function(cancel){
+			if(cancel){
+				response(false);
+			}else{
+				response(true);
+			}
+		});
+	}else{
+		response(true);
+	}
+}
+// ファイルダウンロード情報設定
+function setDlFileDataNml(pathVal, nameVal) {
+
+	$("[name='dl_type']").val('1');
+	$("[name='dl_name']").val(nameVal);
+	$("[name='dl_kbn']").val(pathVal);
+
+}
+
+//ファイルダウンロード情報設定
+function setDlFileDataShow(noVal) {
+
+	$("[name='dl_type']").val('2');
+	$("[name='dl_no']").val(noVal);
+
+}
+
+//ファイルダウンロード情報設定
+function setDlFileDataBat(nameVal) {
+
+	$("[name='dl_type']").val('3');
+	$("[name='dl_name']").val(nameVal);
+
+}
+
+//ファイルダウンロード情報設定
+function setDlFileDataPreview(rowVal, noVal) {
+
+	$("[name='dl_type']").val('4');
+	$("[name='dl_row']").val(rowVal);
+	$("[name='dl_no']").val(noVal);
+
+}
+
+//ファイルダウンロード情報設定
+function setDlFileDataLMSLink(nameVal) {
+
+	$("[name='dl_type']").val('5');
+	$("[name='dl_name']").val(nameVal);
+
+}
+
+//ファイルダウンロード情報設定(お知らせ)
+function setDlFileDataOshirase(nameVal, renrakuid) {
+
+	$("[name='dl_type']").val('10');
+	$("[name='dl_name']").val(nameVal);
+	$("[name='dl_no']").val(renrakuid);
+
+}
+
+var timeoutid_showComBox = '';
+function showComBox(message) {
+	if(iframeFlg){
+		//子画面の場合
+		window.parent.showComBox(message);
+		return;
+	}
+
+	var comtag = '<div id="com_box" ><p id="com_box_msg" >'+message+'</p></div>';
+
+	if ($('#com_box').val() != undefined) {
+		$('#com_box').remove();
+		clearTimeout(timeoutid_showComBox);
+	}
+
+	$('body').append(comtag);
+
+	var ww =  (window.innerWidth-$('#com_box').width())/2;
+	$('#com_box').css({left:ww,top:0});
+
+	$('#com_box').slideDown(
+			function(){
+				timeoutid_showComBox = setTimeout(function() {
+					$('#com_box').slideUp();
+				},3000);
+			}
+	);
+}
+
+/**
+ * 引っ張って更新制御
+ */
+$(function() {
+	// prevent pulldown reload
+	var $target = $(window);
+	var windowScrollTop;
+	var prevY = -1;
+	var direction = 0; // 0:neutral, -1:gotoTop, 1:gotoBottom
+
+	var supportsPassive = false;
+	try {
+	  // getter として opts.passive を定義して、 addEventListener 内で呼ばれたことがわかるようにする
+	  var opts = Object.defineProperty({}, 'passive', {
+	    get: function() {
+	      // 内部で opts.passive が呼ばれたら対応ブラウザ
+	      // 用意しておいたフラグを有効にする
+	      supportsPassive = true;
+	    }
+	  });
+	  // 試しに適当なイベントを補足し、 opts.passive が呼ばれるか試す
+	  window.addEventListener("test", null, opts);
+	} catch (e) {}
+
+	$target.on('touchstart', function(e){
+	    windowScrollTop = $target.scrollTop();
+	    prevY = e.originalEvent.changedTouches[0].pageY;
+	    direction = 0;
+	});
+
+	function touchMove(e, currentY) {
+	    if (direction == 0 && prevY != -1) {
+	        if (currentY > prevY) { direction = -1; }
+	        if (currentY < prevY) { direction =  1; }
+	    }
+	    if (windowScrollTop <= 0 && direction == -1) {
+			e.preventDefault();
+	        return false;
+	    }
+	    prevY = currentY;
+	}
+
+	if (supportsPassive) {
+		window.addEventListener('touchmove', function(e){
+			return touchMove(e, e.changedTouches[0].pageY);
+		}, {passive: false});
+	} else {
+		$target.on('touchmove', function(e){
+			return touchMove(e, e.originalEvent.changedTouches[0].pageY);
+		});
+	}
+
+});
+
+/**
+ * ブラウザ戻る制御
+ */
+function backCtrl_rf(pno, loca) {
+	if (iframeFlg) {
+		//子画面の場合
+		window.parent.backCtrl_rf(pno,loca);
+		return;
+	}
+
+//	console.log("プッシュ\n現在地:"+window.location.href);
+
+	if (pno == null) {
+		window.history.pushState(window.location.href, null, null);
+	} else {
+		window.history.pushState(window.location.href, null, "?page=" + pno);
+	}
+}
+
+
+$(function(){
+//	console.log("ロード\n現在地:"+window.location.href);
+	backCtrl_rf(null,window.location.href);
+
+
+	var pno = 0;
+	window.onpopstate = function() {
+//		console.log("ポップ\n現在地:"+window.location.href);
+		pno += 1;
+		backCtrl_rf(pno,window.location.href);
+
+	}
+});
+
+// 全ての日付テキストフィールドに対してバルーン表示を有効化する
+$(document).on("change", ".datepicker", function(){
+	Validator.check( this , "!date count-10" );
+});
+
+
+/**
+ * 確認ダイアログ簡単作成(画面スクロールを行わない版)。
+ * <p>
+ *
+ * message : ダイアログのメッセージ本文<BR>
+ * title : ダイアログのタイトル<BR>
+ * buttonok : OKボタンのテキスト<BR>
+ * buttoncancel : キャンセルボタンのテキスト<BR>
+ * response : コールバック関数を指定する。引数 cancel にボタン選択の結果が入る。 OK ならば false、キャンセルならば true
+ * となる。
+ */
+function confirmDialogKeepPosition(message, title, buttonok, buttoncancel, response) {
+	if(iframeFlg){
+		//子画面の場合
+		window.parent.confirmDialog(message, title, buttonok, buttoncancel, response);
+		return;
+	}
+	// ウィンドウ位置の保持
+	var window_X = $(window).scrollLeft();
+	var window_Y = $(window).scrollTop();
+	var _dlg = $('<div id="confDlg">' + message + '</div>');
+
+	if ($("#confDlg").val() != undefined) {
+		return;
+	}
+
+	var _buttons = {};
+	_buttons[buttonok] = function() {
+		$(this).dialog('close');
+		response(false);
+	};
+	_buttons[buttoncancel] = function() {
+		$(this).dialog('close');
+		response(true);
+	};
+
+	_dlg.dialog({
+		//modal時のdraggableは組み合わせ固定
+		modal : true, draggable : false,
+		title : title,
+		minHeight : 200,
+		height :"auto",
+		maxWidth : 430,
+		buttons : _buttons,
+		overlay : {
+			opacity : 0.1,
+			background : '#225B7F'
+		},
+		position : {
+			of : positionLT(),
+			at : 'top center',
+			my : 'top center'
+		},
+		open : function(event, ui) {
+			positionLT();
+		},
+		close : function(event) {
+			$(this).dialog('destroy');
+			// ウィンドウ位置の復帰
+			$(window).scrollLeft(window_X);
+			$(window).scrollTop(window_Y);
+		}
+	});
+}
+
+/** 渡されたテキストオブジェクトに対し、特定の半角記号に対する変換処理を行う。
+ *  CommonUtil.nameEncode(///) と同一。
+ */
+function nameEncode(obj){
+
+    var values = obj.val();
+    var names = "";
+    for(var i = 0 ; i< values.length ; i++){
+        switch (values.charCodeAt(i)) {
+        case 33: names += '！'; break;
+        case 34: names += '”'; break;
+        case 42: names += '＊'; break;
+        case 47: names += '／'; break;
+        case 58: names += '：'; break;
+        case 60: names += '＜'; break;
+        case 62: names += '＞'; break;
+        case 63: names += '？'; break;
+        case 124:names += '｜'; break;
+        case 92: names += '￥'; break;
+        case 165:names += '￥'; break;
+        default: names += values.charAt(i); break;
+        }
+    }
+    obj.val(names);
+}
+
+/****************************************************************
+* 機　能： 入力された値が日付でYYYY/MM/DD形式になっているか調べる
+* 引　数： strDate = 入力された値
+* 戻り値： 正 = true　不正 = false
+****************************************************************/
+function ckDate(strDate) {
+    if(!strDate.match(/^\d{4}\/\d{2}\/\d{2}$/)){
+        return false;
+    }
+    var y = strDate.split("/")[0];
+    var m = strDate.split("/")[1] - 1;
+    var d = strDate.split("/")[2];
+    var date = new Date(y,m,d);
+    if(date.getFullYear() != y || date.getMonth() != m || date.getDate() != d){
+        return false;
+    }
+    return true;
+}

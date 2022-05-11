@@ -1,0 +1,19 @@
+@charset "UTF-8";
+/** Copyright (c) 2013 NSD CO., LTD. All Rights Reserved. */
+
+
+/** 文字数カウント*/
+.countTip{
+	display: table;
+}
+
+.countTip:after{
+    content: '('attr(moji)')';
+    font-size: 10px;
+    position:relative;
+    color: red;
+    vertical-align: top;
+    line-height: 10px;
+    display: table-cell;
+    
+}

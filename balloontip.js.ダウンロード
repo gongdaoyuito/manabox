@@ -1,0 +1,124 @@
+
+var BalloonTip = {
+
+	tip: function(field, msg) {
+		//メッセージをバルーン表示
+		 BalloonTip.balloon.open(field, msg);
+
+	}
+};
+
+BalloonTip.balloon = {
+   index: 0,
+
+   open: function(field, msg) {
+
+      if(!field._validballoon) {
+         var obj = new this.element(field);
+         obj.create();
+         field._validballoon = obj;
+      }
+
+      field._validballoon.show(msg);
+   },
+
+   element: function() {
+      this.initialize.apply(this, arguments);
+   }
+};
+
+BalloonTip.balloon.element.prototype = {
+   initialize: function(field) {
+      this.parent = BalloonTip.balloon;
+      this.field = field;
+   },
+
+   create: function() {
+
+      var box = document.createElement('div');
+      box.className = 'baloon';
+
+      var self = this;
+      addEvent(box, 'click', function() { self.toTop(); });
+
+      var bindClose = function() { self.close(); };
+      var link = document.createElement('a');
+      link.appendChild(document.createTextNode('X'));
+      link.setAttribute('href', 'javascript:void(0);');
+      addEvent(link, 'click', bindClose);//×押下でバルーン閉じる
+
+      addEvent(document, 'mousedown', bindClose);//どこか押下でバルーン閉じる
+
+      var msg = document.createElement('span');
+      var div = document.createElement('div');
+      div.appendChild(link);
+      div.appendChild(msg);
+      box.appendChild(div);
+      document.body.appendChild(box);
+
+      this.box = box;
+      this.msg = msg;
+   },
+
+   show: function(msg) {
+      var field = this.field;
+      this.msg.innerHTML  = msg;
+
+      this.box.style.display = '';
+      this.toTop();
+
+      // スクロールしても変わらない値
+      var offsetAbs = Position.offset(field);
+      var topAbs = offsetAbs.y - 25;
+      //var leftAbs = offsetAbs.x - 20 + field.offsetWidth;
+
+      // スクロールすると変わる値
+      var offsetRel = field.getBoundingClientRect();
+      //var topRel = offsetRel.top - 25;;
+      var LeftRel = offsetRel.left - 20 + field.offsetWidth;
+
+      var top = topAbs;
+      var left = LeftRel;
+
+      this.box.style.top = top + 'px';
+      this.box.style.left = left + 'px';
+
+	var formWith;
+	if ($("[name='cmdForm_ifream']").length > 0) {
+		formWith = $("[name='cmdForm_ifream']").width();
+	} else {
+		formWith = $("[name='cmdForm']").width();
+	}
+
+	//表示領域をはみ出す場合
+	if (LeftRel + this.box.offsetWidth > formWith) {
+		this.box.style.left = offsetRel.left - this.box.offsetWidth + 20 + 'px';
+		this.box.className = 'baloonR';
+
+	} else {
+		this.box.className = 'baloon';
+	}
+
+     var colors = new Array('#FF6666', '#FFAAAA', '#FF6666', '#FFAAAA');
+     window.setTimeout(function() {
+        if(colors.length > 0) {
+           field.style.backgroundColor = colors.shift();
+           window.setTimeout(arguments.callee, 70);
+        }
+     }, 10);
+   },
+
+   close: function() {
+      this.box.style.display = 'none';
+      this.field.style.backgroundColor = '';
+   },
+
+   visible: function() {
+      return (this.box.style.display == '');
+   },
+
+   toTop: function() {
+	   this.box.style.zIndex = ++ this.parent.index;
+   }
+};
+

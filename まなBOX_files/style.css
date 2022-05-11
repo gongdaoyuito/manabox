@@ -1,0 +1,514 @@
+@charset "UTF-8";
+/** Copyright (c) 2013 NSD CO., LTD. All Rights Reserved. */
+
+* {
+  font-family: 'ヒラギノ角ゴ ProN W3','Hiragino Kaku Gothic ProN',
+  				'メイリオ', Meiryo, sans-serif;
+  font-size: 14px;
+  padding: 0;
+  margin: 0;
+}
+
+html,body,form {
+  height: 98%;
+  _height: 98%;
+  margin: 2px;
+  padding: 0px;
+  border: 0px;
+  line-height: 1.1;
+}
+
+/*折り返し指定*/
+body{
+	word-break:normal;/*英語などは単語単位、中日韓は表示幅で折り返す。*/
+	overflow-wrap:break-word;/*長い英単語は表示幅で折り返す。*/
+	word-wrap:break-word;/*overflow-wrap非対応ブラウザのための指定*/
+}
+/*jqgrid内のべた文は折り返さない(ui.jqgrid.cssでwhite-space:preすべて列挙)*/
+.ui-jqgrid tr.jqgrow td,
+.ui-jqgrid tr.jqgroup td,
+.ui-jqgrid tr.jqfoot td,
+.ui-jqdialog-content .form-view-data {
+	white-space:nowrap;
+}
+
+img {
+  padding: 0px;
+  border: none;
+  /*vertical-align: text-bottom;*/
+  -ms-interpolation-mode: bicubic;/* IE：サムネ表示時に綺麗に表示する */
+}
+
+/**iOSのiframeでスクロールを表示する*/
+.iframeScroll {
+	overflow:auto;
+	-webkit-overflow-scrolling: touch;
+}
+
+/* ヘッダ・フッタの境界値線 */
+hr.headerFooterBorder{
+	width: 100%;
+	height:3px;
+	border:none;
+	margin-top: 5px;
+	margin-bottom: 5px;
+}
+
+/* ヘッダとフッタの間にあるコンテンツエリア */
+#contentsMenu{
+	width: 1250px;
+	margin: auto;
+}
+
+/* ヘッダとフッタの間にあるコンテンツエリア(小窓) */
+#contentsMenuDialog{
+	width: 1000px;
+	margin: auto;
+}
+
+/* -------------- jqGrid -------------- */
+/* jqGridでリンクを張ったセルのCSS */
+.jqGridLinkCell, .linkCell{
+	color: #4d4398 !important;
+	display: block;
+	cursor: pointer;
+}
+/*
+.jqGridLinkCell:hover{
+	color: #e73562 !important;
+}*/
+/* 非活性のボタンが膨らむのを抑制 */
+.ui-jqgrid .ui-state-disabled:hover {padding:0px;}
+
+
+
+/* datepicker - カレンダーのCSS調整 */
+/* 年月の幅調整(元のテーマ「jquery-ui-1.8rc3.custom.css」) */
+.ui-datepicker select.ui-datepicker-month,
+.ui-datepicker select.ui-datepicker-year { width: 45%;}  /* 49%; */
+table.ui-datepicker-calendar tbody td:first-child a.ui-state-default{/*土曜*/
+    color: #ff6347;
+}
+table.ui-datepicker-calendar tbody td:last-child a.ui-state-default {/*日曜*/
+    color: #4169e1;
+}
+
+/* -------------- a href -------------- */
+a:link {
+  color: #4d4398;
+}
+
+a:visited {
+  color: #4d4398;
+}
+
+/*UT-934
+a:hover {
+  color: #e73562;
+}
+a img:hover {
+  opacity:0.5;
+}*/
+
+a:active {
+  color: #4d4398;
+}
+
+a {
+  color: #4d4398;
+  cursor: pointer;
+  text-decoration: none;
+  border-bottom: 0px solid;
+  vertical-align: baseline;
+  zoom: 1;
+}
+
+input , textarea{
+  padding: 1px;
+  resize: none;
+}
+/*
+input[type=text]{
+	height:22px;
+	vertical-align:middle;
+}
+*/
+
+input[type="text"], input[type="email"]{
+  width: 100%;
+  -moz-box-sizing: border-box;
+  -webkit-box-sizing: border-box;
+  box-sizing: border-box;
+}
+
+input[type="password"]{
+  width: 100%;
+  -moz-box-sizing: border-box;
+  -webkit-box-sizing: border-box;
+  box-sizing: border-box;
+}
+input[type="checkbox"]{
+	outline: 0;
+}
+
+/*MacSafari iOSSafariでも強制的にグレー表示させる*/
+input[type="text"]:disabled ,
+textarea:disabled{
+ background-color: #ebebe4;
+ color:#545454;
+ opacity: 1!important;/*iOSで色が白っぽくなるのを抑制*/
+ -webkit-text-fill-color:#545454;
+}
+
+/* --------- パン屑リストのデザイン ---------start */
+.delicious {
+        list-style: none;
+        overflow: hidden;
+        margin: 0;
+        font: 18px;
+}
+.delicious li {
+        float: left;
+        line-height: 20px;
+}
+.delicious li a {
+        color: #ffffff;
+        text-decoration: none;
+        padding: 0 10px 0 15px;
+        background: #a9a9a9;
+        display: block;
+        float: left;
+}
+.delicious li a::after {
+        position: relative;
+        display: block;
+        margin-top: -10px;
+        margin-left: auto;
+        margin-right: -15px;
+        height: 10px;
+        width: 10px;
+        content: " ";
+        -webkit-transform: skew(-30deg);
+        background: #a9a9a9;
+        border-right: 2px solid white;
+}
+.delicious li a::before {
+        float: right;
+        display: block;
+        margin-bottom: -10px;
+        margin-left: auto;
+        margin-right: -15px;
+        height: 10px;
+        width: 10px;
+        content: " ";
+        -webkit-transform: skew(30deg);
+        background: #a9a9a9;
+        border-right: 2px solid white;
+}
+.delicious li:last-child {
+        padding-left: 15px;
+        background: transparent !important;
+        font-weight: 900;
+}
+.delicious li a:hover,
+.delicious li a:hover::before,
+.delicious li a:hover::after {background: #474a4d;}
+
+/* --------- パン屑リストのデザイン ---------end */
+/* --------- パン屑リスト風（リンクなし）のデザイン ---------start */
+.lookdelicious  p{
+	height: 22px;
+	line-height: 22px;
+	overflow: auto;
+	background-color: #ffe4e1;
+	}
+/* --------- パン屑リスト（リンクなし）のデザイン ---------end */
+
+/* --------- フォームに対する逐次エラーチェック用 --------- start */
+
+div.baloon {
+   color: #ff6347;
+   position: absolute;
+   padding-left: 5px;
+   background: url("../jq/errCkJs/baloon.gif") no-repeat top left;
+   z-index: 1;
+}
+div.baloon a {
+   padding: 5px;
+   margin-right: 5px;
+}
+div.baloon div {
+   background: url("../jq/errCkJs/baloon_right.gif") no-repeat top right;
+   padding: 6px 10px 14px 0;
+   white-space: nowrap;
+}
+
+div.baloonR {
+   color: #ff6347;
+   position: absolute;
+   padding-right: 5px;
+   background: url("../jq/errCkJs/baloon2.gif") no-repeat top right;
+   z-index: 1;
+}
+div.baloonR a {
+   padding: 5px;
+   margin-right: 5px;
+}
+div.baloonR div {
+   background: url("../jq/errCkJs/baloon_left.gif") no-repeat top left;
+   padding: 6px 14px 10px 0;
+   white-space: nowrap;
+}
+
+
+/* --------- フォームに対する逐次エラーチェック用 --------- end */
+
+/* --------- システムエラー画面用 --------- start */
+
+h2.error_H2{
+	padding: 5px 0px 0px 0px;
+	margin: 0px 0px 5px 0px;
+	font-size: 14px;
+	height: 20px;
+	line-height: 20px;
+	width: 100%;
+	border-bottom: 3px solid #ccc;
+	white-space: nowrap;
+	vertical-align: baseline;
+
+}
+
+/* --------- システムエラー画面用 --------- end */
+
+
+
+
+/***************************************************************************************/
+
+input.button{
+  _overflow: visible;
+}
+
+input.file {
+  padding: 3px 1px 3px 1px;
+}
+
+select {
+  padding: 1px;
+  zoom: 0;
+}
+/* 以下、スクロール可能テーブル内レイアウト */
+.style_table_plus{
+  width:450px;
+  margin: 5px ;
+  border: 1px solid #c0c0c0;
+}
+.style_table {
+  table-layout: fixed;
+  padding: 5px;
+  text-align: left;
+  color: inherit;
+  background-color: #ffffff;
+  empty-cells: show;
+  width:100%;
+}
+
+#loginCtrlArea {
+	max-width: 450px;
+}
+#loginArea{
+	height:80%;
+	width:100%;
+	max-height:500px;
+	max-width:675px;
+	margin:auto;
+	background-color:#B5D425;
+	border:5px #B5D425 solid;
+	border-radius:10px;
+}
+#loginArea img{
+    width: 100%;
+    max-width: 470px;
+}
+.style_table td {
+  margin: 2px;
+  /* IE6 対応 ----- ↓ ----- */
+  min-height: 19px;
+  height: auto !important;
+  height: 19px;
+  line-height: 19px;
+  /* IE6 対応 ----- ↑ ----- */
+  vertical-align: middle;
+}
+.style_head {
+  color: black;
+  background-color: #c0c0c0;
+}
+
+.style_td {
+  color: inherit;
+  background-color: white;
+}
+
+
+
+
+
+.style_limit {
+  color: black;
+  background-color: #ffffcc;
+}
+
+.search_cond_div {
+  display: table;
+  _display: inline;
+  _zoom: 1;
+}
+
+.cond_search {
+  white-space: nowrap;
+  margin-top: 3px;
+  margin-bottom: 0px;
+  text-align: right;
+}
+
+.scroll_area {
+  display: table;
+  _display: inline;
+  _zoom: 1;
+}
+
+.scroll_head {
+  table-layout: fixed;
+  text-align: center;
+}
+
+.scroll_data {
+  table-layout: fixed;
+  border-top-width: 0px;
+  margin-bottom: 0px;
+}
+
+.scroll_div {
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.scroll_menu {
+  white-space: nowrap;
+  margin-top: 0px;
+  margin-bottom: 2px;
+  text-align: left;
+}
+
+.searchHitCount {
+  color: red;
+  font-weight: bold;
+}
+
+.selectPageIndex {
+  color: red;
+  font-weight: bold;
+}
+
+.pageIndex {
+  font-weight: bold;
+}
+
+.error {
+  color: red !important;
+  margin: 0px;
+  padding: 0px;
+  white-space: nowrap;
+}
+
+.info {
+  color: blue !important;
+  margin: 0px;
+  padding: 0px;
+  white-space: nowrap;
+}
+
+.required_mark {
+  color: red !important;
+  margin: 0px;
+  padding: 0px;
+  white-space: nowrap;
+}
+
+.sort_arrow {
+  padding: 1px;
+  vertical-align: bottom;
+}
+
+.section_title {
+  font-size: 12px;
+  font-weight: bold;
+}
+
+.stu_user_name {
+  color: red !important;
+}
+
+.attention {
+  color: red !important;
+}
+
+.ui-datepicker-trigger {
+  cursor: pointer;
+}
+/*display: noneをクラス化*/
+.invisible{
+	display: none;
+}
+/**アイコンサイズ*/
+.icon_small{
+	width: 25px;
+	height: 25px;
+}
+.icon_middle{
+	width: 40px;
+	height: 40px;
+}
+.icon_large{
+	width: 60px;
+	height: 60px;
+}
+
+/** 画像ラジオ、チェックボックス */
+.styledRadio {
+	float: left;
+	clear: both;
+	margin: 0 6px 6px 0;
+}
+
+.styledCheckbox {
+	float: left;
+	clear: both;
+	margin: 0 6px 6px 0;
+}
+
+/** 押下できないボタンのレイアウト */
+.notClickButton{cursor: default !important; color: #a9a9a9 !important; border-color: #a9a9a9 ;}
+
+#com_box{
+	display:none;
+	position:fixed;
+	z-index:151;
+	max-width:450px;
+	min-width:250px;
+	width:30%;
+	height:80px;
+	border:3px solid #b8d200;
+	background:#ffffff;
+}
+
+#com_box_msg{
+	text-align: center;
+	padding-top: 30px;
+}
+
+/*観点別タブ表示横幅狭く（活動登録・基準子画面共通）*/
+#kntnbtTabs.ui-tabs .ui-tabs-nav li a{
+	padding:0.5em 0.7em;
+}

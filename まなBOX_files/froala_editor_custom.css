@@ -1,0 +1,54 @@
+@charset "UTF-8";
+/*!
+ * エディタ 追加CSS
+ */
+
+/* リンク 同じタブで開くを不可に */
+.froala-editor .froala-popup div.f-popup-line input[type=checkbox],
+.froala-editor .froala-popup div.f-popup-line label,
+.froala-editor .froala-popup div.f-popup-line .styledCheckbox {
+	display: none;
+}
+
+/* 非活性時 画像の色を普通に */
+.froala-box.fr-disabled .froala-element img {
+	-webkit-opacity: 1.0;
+	-moz-opacity: 1.0;
+	opacity: 1.0;
+	-ms-filter: none;
+}
+
+/* 非活性時 装飾のかかっていない文字の色を普通に */
+.froala-box.fr-disabled .froala-element{
+	color:black;
+}
+
+
+/* 画像にリンクを張るのを無効 */
+.froala-editor .froala-image-editor-popup button[data-cmd="linkImage"] {
+	display: none;
+}
+
+/* 画像上ポインタ */
+.editorImgLink {
+	cursor:pointer;
+}
+
+/* (Mobile対応)画像ULポップアップの横幅調整 */
+.froala-popup.froala-image-popup div.f-popup-line.drop-upload div.f-upload{
+	min-width:280px;
+}
+
+/* (簡易まなBOX)画像お気に入り枠囲い */
+img.fr-fil.fr-dib{
+	border:solid 3px transparent;
+	padding:unset;
+}
+img.fr-bordered{
+	border:solid 3px #ff8080!important;
+}
+.froala-element span.f-img-editor.fr-fil{
+	margin: unset;
+}
+
+

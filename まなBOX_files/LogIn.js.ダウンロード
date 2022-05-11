@@ -1,0 +1,55 @@
+/**
+ * Copyright (c) 2013 NSD CO., LTD. All Rights Reserved.
+ */
+/** 画面初期表示時 処理 */
+window.onload = function() {
+
+	// ボタン化
+	$(".buttonItem").button();
+
+	// iOS以外の場合、入力項目にフォーカスセット
+	if (is_ios != "1") {
+		if (typeof window.document.forms[0].gakko_cd != "undefined") {
+			// 学校コードにフォーカスセット
+			window.document.forms[0].gakko_cd.focus();
+
+		} else {
+			// IDにフォーカスセット
+			window.document.forms[0].login_id.focus();
+		}
+	}
+
+	// ステータスバーの名前を削除
+	window.defaultStatus = ' ';
+
+};
+
+/** パスワードテキストボックスでの『Enter』キーのフック */
+function enter(e, form) {
+	var key = 0;
+	if (document.all) {
+		key = event.keyCode;
+	} else if (document.layers) {
+		key = String.fromCharCode(e.charCode);
+	} else if (document.getElementById) {
+		key = e.which;
+	}
+	if (form.value != '') {
+		if (key == 13 || key == 3) {
+				execSrvStatus('logIn');
+		}
+	}
+	return true;
+}
+
+/** チェックボタン押下によるパスワード中身チェック */
+function onPassCheck(){
+	var pw = document.getElementById('login_pass');
+	var pwCheck = document.getElementById('passCheck');
+    if(pwCheck.checked) {
+        pw.setAttribute('type', 'text');
+    } else {
+        pw.setAttribute('type', 'password');
+    }
+}
+
